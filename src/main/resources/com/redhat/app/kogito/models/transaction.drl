@@ -1,0 +1,42 @@
+package com.redhat.app.kogito.models;
+
+unit TransactionUnit;
+
+import com.redhat.app.kogito.models.events.Transaction;
+import com.redhat.app.kogito.models.TransactionUnit;
+
+rule "normal tx"
+when
+    $t: /transactions[ amount >= 100 ]
+then
+    modify($t) {setStatus("ok")}
+    System.out.println($t.getId());
+end
+
+rule "small tx"
+when
+    $t: /transactions[ amount < 100 ]
+then
+    modify($t) {setStatus("smallTx")}
+    System.out.println($t.getId());
+end
+
+//this determines the endpoint 
+//query name lowercase only
+//curl -H "Content-Type: application/json" -X POST -d '{"transactions":[{"id": "tx_001", "amount":2000, "customer": null, "location": null, "transactionType": null, "timestamp":null }]}' http://localhost:8080/checktx
+//curl -H "Content-Type: application/json" -X POST -d '{"transactions":[{"id": "tx_001", "amount":2000 }]}' http://localhost:8080/checktx
+query checktx
+  $t : /transactions
+end
+
+//curl -H "Content-Type: application/json" -X POST -d '{"transactions":[{"id": "tx_001", "amount":2000 }]}' http://localhost:8080/checkok
+
+query checkok
+  $t : /transactions[status == "ok"]
+end
+
+// check for tx that are smaller than 100
+//curl -H "Content-Type: application/json" -X POST -d '{"transactions":[{"id": "tx_001", "amount":99 }]}' http://localhost:8080/checksmalltx
+query checksmalltx
+  $t : /transactions[status == "smallTx"]
+end

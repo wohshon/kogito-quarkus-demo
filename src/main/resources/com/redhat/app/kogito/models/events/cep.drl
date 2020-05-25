@@ -1,0 +1,82 @@
+package com.redhat.app.kogito.models.events;
+//unit TransactionUnit
+
+import com.redhat.app.kogito.models.events.Transaction;
+import com.redhat.app.kogito.models.TransactionUnit;
+import com.redhat.app.kogito.models.Account;
+import com.redhat.app.kogito.models.OrdinaryAccount;
+import java.util.List;
+declare Transaction
+  @role( event )
+  @timestamp( timestamp )
+  //@duration( callDuration )
+  //@expires( 1h35m )
+  @expires( 30m )
+end
+
+declare PotentialFraudFact 
+	account: Account
+	transactions: java.util.ArrayList
+end
+
+declare TestFact 
+	account: Account
+	transactions: java.util.ArrayList
+end
+
+rule "multiple ATM transactions within 10 mins at different locations"
+when
+  $list : List(size >=2 ) from accumulate($tx: Transaction( ) over window:time (10m) from entry-point "ATM Stream",
+                                 collectList($tx) )
+  
+  $t1: Transaction() from $list
+	$t2: Transaction(
+      this != $t1, 
+      this.getAccount().getAccountId().equals($t1.getAccount().getAccountId()),
+      this.getLocation()!=($t1.getLocation()),
+      this after[0s, 10s] $t1 
+      ) from $list	  
+then
+  System.out.println("\nDetected potential fraud for the following activities: ");
+  System.out.println("ATM tx1 : "+$t1);
+  System.out.println("ATM tx2 : "+$t2);
+
+end
+
+
+rule "Found Test fraud"
+when
+	$test : TestFact($list:transactions)
+  $t1 : Transaction() from $list
+
+then
+	System.out.println("TEST FACT "+$t1);
+end
+
+rule "Found potential fraud"
+when
+	exists PotentialFraudFact()
+	$p : PotentialFraudFact()
+then
+	System.out.println("!!!! Registered fraud event!!!!\n");
+  System.out.println("ATM activity at 2 locations detected for account:  "+ ((Transaction)$p.getTransactions().get(0)).getAccount().getAccountId()+"\n");
+	
+  $p = null;
+end
+
+rule "simple test"
+when
+   $t : Transaction()  from entry-point "ATM Stream"
+
+then
+    //modify($t) {setStatus("cep")}
+    //System.out.println("event triggerred");
+    //System.out.println($t.getId()+" "+$total);
+end
+
+
+//
+//curl -H "Content-Type: :[{"id": "tx_001", "amount":2000, "timestamp": 1590397080290 }]}' http://localhost:8080/cep
+//query cep
+//  $t : /transactions[id == "tx_001"]
+//end

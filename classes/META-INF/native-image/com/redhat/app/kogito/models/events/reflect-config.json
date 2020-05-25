@@ -1,0 +1,11 @@
+[
+    {
+        "name": "com.redhat.app.kogito.models.events.multiple_32ATM_32transactions_32within_3210_32mins_32at_32different_32locationsAccumulate30",
+        "allDeclaredConstructors": true,
+        "allPublicConstructors": true,
+        "allDeclaredMethods": true,
+        "allPublicMethods": true,
+        "allDeclaredFields": true,
+        "allPublicFields": true
+    }
+]

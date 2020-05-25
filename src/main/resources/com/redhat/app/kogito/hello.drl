@@ -1,0 +1,16 @@
+package com.redhat.app.kogito;
+unit Hello;
+
+rule helloWorld
+when
+    $s: /strings[ this == "hello" ]
+then
+    strings.add("world");
+    System.out.println($s);
+end
+
+//this determins the endpoint 
+//curl -H "Content-Type: application/json" -X POST -d '{"strings":["hello"]}' http://localhost:8080/hello
+query hello
+  $s : /strings
+end
