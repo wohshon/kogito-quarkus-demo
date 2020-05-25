@@ -2,6 +2,18 @@
 
 # for kogito
 
+Additional testcases : please see comments in the drl files 
+
+```
+curl -H "Content-Type: application/json" -X POST -d '{"transactions":[{"id": "tx_001", "amount":2000 }]}' http://localhost:8080/checktx
+
+curl -H "Content-Type: application/json" -X POST -d '{"transactions":[{"id": "tx_001", "amount":99 }]}' http://localhost:8080/checksmalltx
+```
+CEP demo work in progress, the following curl command will create 2 events and simulate ATM events being detected over 2 ATM locations that belongs to the same account within 10 secs
+
+```
+ curl localhost:8080/rest/hello
+```
 
 ### POST /hello
 
