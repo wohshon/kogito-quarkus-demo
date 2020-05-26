@@ -1,0 +1,17 @@
+{
+    "id": "TX_0004",
+    "account": {
+        "accountId": "acct_3"
+    },
+    "timestamp": 15000000,
+    "location": 2,
+    "amount": 3000,
+    "customer": {
+        "name": "johnny",
+        "accounts": []
+    },
+    "status": "NEW",
+    "transactionType": 1
+
+    
+}

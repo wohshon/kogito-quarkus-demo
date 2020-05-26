@@ -5,12 +5,12 @@ import java.util.Date;
 import com.redhat.app.kogito.models.Account;
 import com.redhat.app.kogito.models.Customer;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class Transaction {
 	
@@ -35,6 +35,7 @@ public class Transaction {
 		WEST
 	}
 
+	/**
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
@@ -49,5 +50,6 @@ public class Transaction {
         
 		return sb.toString();
 	}
+	 */
 }
 

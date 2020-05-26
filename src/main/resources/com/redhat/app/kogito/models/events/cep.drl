@@ -6,6 +6,9 @@ import com.redhat.app.kogito.models.TransactionUnit;
 import com.redhat.app.kogito.models.Account;
 import com.redhat.app.kogito.models.OrdinaryAccount;
 import java.util.List;
+
+dialect "java"
+
 declare Transaction
   @role( event )
   @timestamp( timestamp )
@@ -34,24 +37,29 @@ when
       this != $t1, 
       this.getAccount().getAccountId().equals($t1.getAccount().getAccountId()),
       this.getLocation()!=($t1.getLocation()),
-      this after[0s, 10s] $t1 
+      //this after[0s, 10s] $t1 
+      this after[0s, 5s] $t1 
       ) from $list	  
 then
   System.out.println("\nDetected potential fraud for the following activities: ");
   System.out.println("ATM tx1 : "+$t1);
   System.out.println("ATM tx2 : "+$t2);
+ 	PotentialFraudFact potentialFraud = new PotentialFraudFact();
+	potentialFraud.setTransactions(new java.util.ArrayList());
+	potentialFraud.getTransactions().add($t1);
+	potentialFraud.getTransactions().add($t2);
+  
+  //Caused by: java.lang.IllegalArgumentException: Invalid Entry Point. You updated the FactHandle on entry point 'DEFAULT' instead of 'ATM Stream'
+  //think this is a bug, cannot delete , workaround in rule service where if i detected rules are ivoked, I delete facts
+  //drools.getEntryPoint("ATM Stream").delete($t1);
+  //drools.getEntryPoint("ATM Stream").delete($t2);
+  //drools.getEntryPoint("ATM Stream").delete($t2);
+  System.out.println(drools.getEntryPoint("ATM Stream"));
+  //for java dialect, use entryPoint["name of ep"].delete
+  insert(potentialFraud);
 
 end
 
-
-rule "Found Test fraud"
-when
-	$test : TestFact($list:transactions)
-  $t1 : Transaction() from $list
-
-then
-	System.out.println("TEST FACT "+$t1);
-end
 
 rule "Found potential fraud"
 when
@@ -60,7 +68,6 @@ when
 then
 	System.out.println("!!!! Registered fraud event!!!!\n");
   System.out.println("ATM activity at 2 locations detected for account:  "+ ((Transaction)$p.getTransactions().get(0)).getAccount().getAccountId()+"\n");
-	
   $p = null;
 end
 

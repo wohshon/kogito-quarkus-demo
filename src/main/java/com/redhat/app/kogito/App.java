@@ -1,12 +1,18 @@
 package com.redhat.app.kogito;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import com.redhat.app.kogito.models.Account;
 import com.redhat.app.kogito.models.Customer;
@@ -20,17 +26,64 @@ import org.kie.api.definition.KiePackage;
 import org.kie.api.definition.rule.Rule;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.EntryPoint;
+import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.rules.KieRuntimeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Path("/rest")
+
 public class App {
 
     Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Inject
     RuleService ruleService;    
+    
+    @POST
+    @Path("/event")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String event(Transaction tx) {
+
+        tx.setTimestamp(new Date());
+        this.ruleService.invoke(tx);
+        return tx.toString();
+
+    }
+    @POST
+    @Path("/eventbatch")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String eventBatch(List<Transaction> txList) {
+        List<Transaction> results = new ArrayList<Transaction>();
+        List<FactHandle> handles = new ArrayList<FactHandle>();
+        FactHandle handle=null;
+        for (Transaction tx : txList) {
+            log.info("got event:"+tx);
+            tx.setTimestamp(new Date());
+            handle = this.ruleService.invoke(tx);
+            try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+
+				e.printStackTrace();
+			}
+            handles.add(handle);
+            results.add(tx);
+        }
+        //workaround to clean up since drl has bug
+/*
+        for (FactHandle factHandle : handles) {
+            log.info("deleting fact handle "+factHandle);
+            this.ruleService.getEntryPoint().delete(factHandle);            
+        }
+*/        
+        return results.toString();
+
+    }
+    
+    //test method
     @GET
     @Path("/hello")
     public String hellosvc() {
@@ -47,8 +100,7 @@ public class App {
         tx1.setCustomer(cu1);
         tx1.setLocation(Transaction.TX_LOCATION.WEST);
         //kSession.insert(tu);
-        EntryPoint atmStream = ruleService.getKieSession().getEntryPoint("ATM Stream");
-        atmStream.insert(tx1);
+        ruleService.invoke(tx1);
         int r = ruleService.getKieSession().fireAllRules();
 
         try {
@@ -68,7 +120,7 @@ public class App {
         tx2.setId("TX_0002");
         tx2.setLocation(Transaction.TX_LOCATION.EAST);
 
-        atmStream.insert(tx2);
+        ruleService.invoke(tx2);
          r += ruleService.getKieSession().fireAllRules();
 
         //kSession.insert(tx);
@@ -79,17 +131,21 @@ public class App {
 			e.printStackTrace();
 		}
         Transaction tx3 = new Transaction();
+        Customer<Account> cu3 = new Customer<Account>("Joey");
+        OrdinaryAccount acct3 = new OrdinaryAccount(Double.valueOf(4000), 2.0, "acct_2");
+
         tx3.setAmount(Double.valueOf(2500));
         tx3.setTimestamp(new Date());
-        tx3.setAccount(acct2);
-        tx3.setCustomer(cu2);
+        tx3.setAccount(acct3);
+        tx3.setCustomer(cu3);
         tx3.setId("TX_0003");
-        atmStream.insert(tx3);
-
         tx3.setLocation(Transaction.TX_LOCATION.SOUTH);        
+        ruleService.invoke(tx3);
+
          r += ruleService.getKieSession().fireAllRules();
         log.info("fired "+r);
 
         return tx1.getStatus();
     }
+
 }
