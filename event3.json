@@ -4,7 +4,7 @@
         "accountId": "acct_1"
     },
     "timestamp": 15000000,
-    "location": 3,
+    "location": 2,
     "amount": 3000,
     "customer": {
         "name": "john",

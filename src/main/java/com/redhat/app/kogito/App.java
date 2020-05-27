@@ -46,8 +46,29 @@ public class App {
     @Produces(MediaType.APPLICATION_JSON)
     public String event(Transaction tx) {
 
+        log.info("thread "+Thread.currentThread());
         tx.setTimestamp(new Date());
         this.ruleService.invoke(tx);
+        /*
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+
+            e.printStackTrace();
+        }        
+        Transaction tx1 = new Transaction();
+        tx1.setAmount(Double.valueOf(2000));
+        Customer<Account> cu1 = new Customer<Account>("Joe");
+        OrdinaryAccount acct1 = new OrdinaryAccount(Double.valueOf(5000), 2.0, "acct_1");
+        cu1.addAccount(acct1);
+        tx1.setId("TX_0001");
+        tx1.setAccount(acct1);
+        tx1.setTimestamp(new Date());
+        tx1.setCustomer(cu1);
+        tx1.setLocation(Transaction.TX_LOCATION.SOUTH);
+
+        this.ruleService.invoke(tx1);
+        */
         return tx.toString();
 
     }

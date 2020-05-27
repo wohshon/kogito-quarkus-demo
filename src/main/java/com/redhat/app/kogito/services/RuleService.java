@@ -47,6 +47,7 @@ public class RuleService {
         FactHandle handle = entryPoint.insert(event);
         System.out.println(entryPoint);
         int r = getKieSession().fireAllRules();
+        log.info("------FACT COUNT:"+entryPoint.getFactCount());
         log.info(r+" rules invoked");
         //dirty workaround 
         //supposed to remove the facts in working memory but it seems there is a bug

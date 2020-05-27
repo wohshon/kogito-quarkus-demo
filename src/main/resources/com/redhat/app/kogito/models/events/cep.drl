@@ -31,14 +31,14 @@ when
   $list : List(size >=2 ) from accumulate($tx: Transaction( ) over window:time (10m) from entry-point "ATM Stream",
                                  collectList($tx) )
   
+  
   $t1: Transaction() from $list
 	$t2: Transaction(
       this != $t1, 
       this.getAccount().getAccountId().equals($t1.getAccount().getAccountId()),
       this.getLocation()!=($t1.getLocation()),
-      //this after[0s, 10s] $t1
       //this creates a condition so that events within 10s are captures 
-      this after[0s, 10s] $t1 
+      this after[0s, 100s] $t1 
       ) from $list	  
 then
   System.out.println("\nDetected potential fraud for the following activities: ");
@@ -72,13 +72,16 @@ then
   $p = null;
 end
 
+
 rule "simple test"
 when
-   $t : Transaction()  from entry-point "ATM Stream"
+  $t : Transaction()  from entry-point "ATM Stream"
 
-then
+   then
     //modify($t) {setStatus("cep")}
-    //System.out.println("event triggerred");
+    System.out.println("event triggerred ");
+    //System.out.println(""+$t);
+    //System.out.println("fact count "+drools.getFactCount());
     //System.out.println($t.getId()+" "+$total);
 end
 
