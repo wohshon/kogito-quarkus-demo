@@ -1,15 +1,72 @@
 # kogito-banking project
 
-# for kogito
+Demo on Quarkus Kogito 
 
-Additional testcases : please see comments in the drl files 
+## for kogito CEP
+
+#### Simulate multiple ATM withdrawals in multiple locations in a time window
+
+##### Running the app
+
+`mvn clean compile quarkus:dev`
+
+##### Sending a `Transaction` event to a REST endpoint, e.g.:
+
+```
+curl -H "Content-Type: application/json" -X POST -d @event{1...5}.json  http://localhost:8080/rest/event
+```
+
+event1, event3 causes the rule to be invoked. (the events must be sent within 10 secs)
+
+
+Sample output:
+```
+EntryPoint::ATM Stream
+
+Detected potential fraud for the following activities: 
+ATM tx1 : Transaction(customer=com.redhat.app.kogito.models.Customer@4c63d6fd, status=NEW, timestamp=Wed May 27 13:50:16 SGT 2020, transactionType=WITHDRAWAL, amount=3000.0, account=com.redhat.app.kogito.models.Account@306aa073, location=EAST, id=TX_0003)
+ATM tx2 : Transaction(customer=com.redhat.app.kogito.models.Customer@ce73942, status=NEW, timestamp=Wed May 27 13:50:45 SGT 2020, transactionType=WITHDRAWAL, amount=3000.0, account=com.redhat.app.kogito.models.Account@22bda7bb, location=WEST, id=TX_0001)
+org.drools.modelcompiler.consequence.DroolsEntryPointImpl@320b8b
+
+!!!! Registered fraud event!!!!
+
+ATM activity at 2 locations detected for account:  acct_1
+```
+
+
+Sample event data:
+```
+{
+    "id": "TX_0003",
+    "account": {
+        "accountId": "acct_1"
+    },
+    "timestamp": 15000000,
+    "location": 2,
+    "amount": 3000,
+    "customer": {
+        "name": "john",
+        "accounts": []
+    },
+    "status": "NEW",
+    "transactionType": 1
+
+    
+}
+```
+
+
+
+## for kogito hello world
+
+Additional hello world testcases to play around with RuleUnits : please see comments in the drl files 
 
 ```
 curl -H "Content-Type: application/json" -X POST -d '{"transactions":[{"id": "tx_001", "amount":2000 }]}' http://localhost:8080/checktx
 
 curl -H "Content-Type: application/json" -X POST -d '{"transactions":[{"id": "tx_001", "amount":99 }]}' http://localhost:8080/checksmalltx
 ```
-CEP demo work in progress, the following curl command will create 2 events and simulate ATM events being detected over 2 ATM locations that belongs to the same account within 10 secs
+Test CEP , generates 3 events to simulate ATM withdrawal in multiple location within a timeframe
 
 ```
  curl localhost:8080/rest/hello
@@ -26,6 +83,7 @@ curl -H "Content-Type: application/json" -X POST -d '{"strings":["hello"]}' http
 the service will return `["hello", "world"]`
 
 
+## Generic Quarkus project README below:
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
