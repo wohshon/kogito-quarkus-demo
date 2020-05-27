@@ -18,7 +18,7 @@ Demo on Quarkus Kogito with CEP
 curl -H "Content-Type: application/json" -X POST -d @event{1...5}.json  http://localhost:8080/rest/event
 ```
 
-event1, event3 causes the rule to be invoked. (the events must be sent within 10 secs)
+event1, event3 cause the rule to be invoked. (the events must be sent within 10 secs)
 
 
 Sample output:
@@ -59,7 +59,7 @@ Sample event data:
 
 
 
-## for kogito hello world
+## Some kogito hello world testcases
 
 Additional hello world testcases to play around with RuleUnits : please see comments in the drl files 
 
@@ -74,7 +74,7 @@ Test CEP , generates 3 events to simulate ATM withdrawal in multiple location wi
  curl localhost:8080/rest/hello
 ```
 
-### POST /hello
+#### POST /hello
 
 Post "hello":
 
