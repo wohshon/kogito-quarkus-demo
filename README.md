@@ -2,7 +2,7 @@
 
 Demo on Quarkus Kogito with CEP
 
-[reference](https://github.com/DuncanDoyle/drools-credit-card-fraud-detection-demo)
+[reference for CEP](https://github.com/DuncanDoyle/drools-credit-card-fraud-detection-demo)
 
 ## for kogito CEP
 
