@@ -32,9 +32,10 @@
 <dependency>
   <groupId>org.kie.kogito</groupId>
   <artifactId>kogito-bom</artifactId>
-  <version>0.1.1</version>
+  <version>0.10.1</version>
   <type>pom</type>
   <scope>import</scope>
+
 </dependency>
 
     </dependencies>
@@ -54,10 +55,31 @@
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!--
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-quarkus</artifactId>
     </dependency>
+  -->
+
+    <!-- https://mvnrepository.com/artifact/org.kie.kogito/kogito-quarkus -->
+    <!--use the latest instead of the BOM -->
+<dependency>
+  <groupId>org.kie.kogito</groupId>
+  <artifactId>kogito-quarkus</artifactId>
+  <version>0.10.1</version>
+</dependency>
+
+
+<!-- https://mvnrepository.com/artifact/org.kie.kogito/drools-core 
+<dependency>
+  <groupId>org.kie.kogito</groupId>
+  <artifactId>drools-core</artifactId>
+  <version>0.10.1</version>
+</dependency>
+-->
+
 <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
 <dependency>
   <groupId>org.projectlombok</groupId>

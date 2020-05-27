@@ -49,7 +49,12 @@ public class RuleService {
         int r = getKieSession().fireAllRules();
         log.info(r+" rules invoked");
         //dirty workaround 
-        if (r > 1 ) { //dirty hack to delete handle as the drl ones does not work, i have a base rule running so minimally is one
+        //supposed to remove the facts in working memory but it seems there is a bug
+        //dirty hack to delete handle as long as there is more than 1 rule invokded
+        // 1 rule because I have a catch all rule that is supposed to do auditing
+
+        if (r > 1 ) { 
+            log.info("deleting handle "+handle);
             entryPoint.delete(handle);
         }
         return handle;

@@ -59,9 +59,14 @@ public class App {
         List<Transaction> results = new ArrayList<Transaction>();
         List<FactHandle> handles = new ArrayList<FactHandle>();
         FactHandle handle=null;
+        int i = 0;
         for (Transaction tx : txList) {
             log.info("got event:"+tx);
             tx.setTimestamp(new Date());
+            if (i == 3) {
+                tx.setTimestamp(new Date(System.currentTimeMillis() + 8000));
+            }
+            i++;
             handle = this.ruleService.invoke(tx);
             try {
 				Thread.sleep(500);
